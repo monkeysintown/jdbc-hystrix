@@ -1,5 +1,8 @@
 package com.m11n.jdbc.hystrix;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.*;
@@ -34,6 +37,19 @@ public class HystrixDriver implements Driver {
         return url.startsWith(DRIVER_PREFIX) ? url.replace("hystrix:", "") : url;
     }
 
+    @HystrixCommand(commandKey = "connect",
+            groupKey = "HystrixDriver",
+            threadPoolKey = "HystrixDriverThreadPool",
+            fallbackMethod = "connectFallback",
+            commandProperties = {
+                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "20000"),
+                    @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "1000"),
+                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "20000"),
+                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "20000"),
+                    //@HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "20000"),
+            }
+    )
+
     @Override
     public Connection connect(String url, Properties info) throws SQLException {
         if (url == null) {
@@ -51,6 +67,10 @@ public class HystrixDriver implements Driver {
         Driver driver = findDriver(realUrl);
 
         return driver.connect(realUrl, config.getProperties());
+    }
+
+    public Connection connectFallback(String url, Properties info) throws SQLException {
+        return null;
     }
 
     private HystrixConfiguration configure(String url, Properties info) throws SQLException {
