@@ -1,0 +1,71 @@
+== Overview
+:linkattrs:
+:version: 1.0.0
+
+TODO: add description. ![Maven Central](https://img.shields.io/maven-central/v/com.github.monkeysintown/jdbc-hystrix.svg)
+
+== Build
+
+If you just want to compile the project without running the tests:
+
+[source]
+----
+mvn -DskipTests clean install
+----
+
+If you want to run the tests (Derby and H2 in server mode):
+
+[source]
+----
+mvn clean install
+----
+
+== Get it now
+
+You can find the latest releases here:
+
+https://bintray.com/cheetah/monkeysintown/jdbc-hystrix/_latestVersion[ image:https://api.bintray.com/packages/cheetah/monkeysintown/jdbc-hystrix/images/download.svg[Download], window="_blank" ]
+
+… or setup your Maven dependencies:
+
+[source,xml,subs="specialcharacters,attributes,callouts"]
+----
+<dependency>
+    <groupId>com.m11n.jdbc.ssh</groupId>
+    <artifactId>jdbc-hystrix</artifactId>
+    <version>{version}</version>
+</dependency>
+----
+
+… and configure Bintray's JCenter repository in your pom.xml:
+
+[source,xml]
+----
+...
+<repositories>
+    <repository>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <id>central</id>
+        <name>bintray</name>
+        <url>http://jcenter.bintray.com</url>
+    </repository>
+</repositories>
+...
+----
+
+Get automatic notifications about new releases here:
+
+https://bintray.com/cheetah/monkeysintown/jdbc-hystrix/view?source=watch[ image:https://www.bintray.com/docs/images/bintray_badge_color.png[Get automatic notifications about new jdbc-hystrix versions] ]
+
+== Configure
+
+TBD
+
+=== About
+
+The code is https://github.com/monkeysintown/jdbc-hystrix[open source] and licensed under http://www.apache.org/licenses/LICENSE-2.0[Apache license].
+
+link:contribute.html[Contribute] by reporting issues, suggesting new features, or forking the
+Git repository on GitHub. Pull requests welcome!

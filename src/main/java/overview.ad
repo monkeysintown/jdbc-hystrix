@@ -1,0 +1,60 @@
+= Overview
+:linkattrs:
+:version: 1.0.0
+
+TODO: add description
+
+== Build
+
+If you just want to compile the project without running the tests:
+
+[source]
+----
+mvn -DskipTests clean install
+----
+
+If you want to run the tests:
+
+[source]
+----
+mvn clean install
+----
+
+== Maven dependencies
+
+You can find the latest releases here:
+
+https://bintray.com/cheetah/monkeysintown/${project.artifactId}/_latestVersion[ image:https://api.bintray.com/packages/cheetah/monkeysintown/${project.artifactId}/images/download.svg[Download], window="_blank" ]
+
+… or setup your Maven dependencies:
+
+[source,xml,subs="specialcharacters,attributes,callouts"]
+----
+<dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>${project.artifactId}</artifactId>
+    <version>{version}</version>
+</dependency>
+----
+
+… and configure Bintray's JCenter repository in your pom.xml:
+
+[source,xml]
+----
+...
+<repositories>
+    <repository>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <id>central</id>
+        <name>bintray</name>
+        <url>http://jcenter.bintray.com</url>
+    </repository>
+</repositories>
+...
+----
+
+Get automatic notifications about new releases here:
+
+https://bintray.com/cheetah/monkeysintown/${project.artifactId}/view?source=watch[ image:https://www.bintray.com/docs/images/bintray_badge_color.png[Get automatic notifications about new "${project.artifactId}" versions], window="_blank" ]
