@@ -36,6 +36,28 @@ public abstract class HystrixDriverTest {
     }
 
     @Test
+    public void testSshDriver() throws Exception {
+        Connection connection = DriverManager.getConnection(hystrixUrl);
+
+        logger.info("Info: {}", connection.getClientInfo());
+
+        DatabaseMetaData metadata = connection.getMetaData();
+
+        // Get all the tables and views
+        String[] tableType = {"TABLE"};
+        java.sql.ResultSet tables = metadata.getTables(null, null, "%", tableType);
+
+        assertNotNull(tables);
+
+        String tableName;
+        while (tables.next()) {
+            tableName = tables.getString(3);
+
+            logger.info("Table: {}", tableName);
+        }
+    }
+
+    @Test
     public void testRealDriver() throws Exception {
         Connection connection = DriverManager.getConnection(realUrl);
 
