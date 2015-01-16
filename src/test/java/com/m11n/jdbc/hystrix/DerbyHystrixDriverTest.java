@@ -2,6 +2,7 @@ package com.m11n.jdbc.hystrix;
 
 import com.m11n.jdbc.hystrix.util.Slf4jDerbyBridge;
 import com.m11n.jdbc.hystrix.util.Slf4jOutputStream;
+import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 import org.apache.derby.drda.NetworkServerControl;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -16,6 +17,8 @@ public class DerbyHystrixDriverTest extends HystrixDriverTest {
     private static final Logger logger = LoggerFactory.getLogger(DerbyHystrixDriverTest.class);
 
     private static NetworkServerControl dbServerDerby;
+
+    protected HystrixRequestContext context;
 
     @BeforeClass
     public static void init() throws Exception {
@@ -67,5 +70,7 @@ public class DerbyHystrixDriverTest extends HystrixDriverTest {
         sql = "CREATE TABLE TEST_SSH(ID INT PRIMARY KEY, NAME VARCHAR(255))";
 
         logger.info("JDBC Runtime Info:\n{}", dbServerDerby.getRuntimeInfo());
+
+        context = HystrixRequestContext.initializeContext();
     }
 }

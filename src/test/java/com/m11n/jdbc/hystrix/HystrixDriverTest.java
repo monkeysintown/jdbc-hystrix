@@ -36,11 +36,12 @@ public abstract class HystrixDriverTest {
     }
 
     @Test
-    public void testSshDriver() throws Exception {
+    public void testHystrixDriver() throws Exception {
         Connection connection = DriverManager.getConnection(hystrixUrl);
 
         logger.info("Info: {}", connection.getClientInfo());
 
+        /**
         DatabaseMetaData metadata = connection.getMetaData();
 
         // Get all the tables and views
@@ -55,6 +56,7 @@ public abstract class HystrixDriverTest {
 
             logger.info("Table: {}", tableName);
         }
+         */
     }
 
     @Test

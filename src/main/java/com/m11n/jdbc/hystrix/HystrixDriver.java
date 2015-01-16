@@ -1,16 +1,18 @@
 package com.m11n.jdbc.hystrix;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCollapser;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+import com.netflix.hystrix.contrib.javanica.command.AsyncResult;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.*;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
-import static com.m11n.jdbc.hystrix.HystrixConfiguration.*;
+import static com.m11n.jdbc.hystrix.HystrixConfiguration.DRIVER_PREFIX;
 
 public class HystrixDriver implements Driver {
     private static final int VERSION_MAJOR = 1;
@@ -28,6 +30,9 @@ public class HystrixDriver implements Driver {
         }
     }
 
+    public HystrixDriver() {
+    }
+
     @Override
     public boolean acceptsURL(String url) throws SQLException {
         return (url != null && url.startsWith(DRIVER_PREFIX));
@@ -37,20 +42,10 @@ public class HystrixDriver implements Driver {
         return url.startsWith(DRIVER_PREFIX) ? url.replace("hystrix:", "") : url;
     }
 
-    @HystrixCommand(commandKey = "connect",
-            groupKey = "HystrixDriver",
-            threadPoolKey = "HystrixDriverThreadPool",
-            fallbackMethod = "connectFallback",
-            commandProperties = {
-                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "20000"),
-                    @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "1000"),
-                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "20000"),
-                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "20000"),
-                    //@HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "20000"),
-            }
-    )
-
-    @Override
+    /**
+    @HystrixCommand
+    @HystrixCollapser(fallbackEnabled = false)
+    */
     public Connection connect(String url, Properties info) throws SQLException {
         if (url == null) {
             throw new SQLException("URL is required");
@@ -69,8 +64,33 @@ public class HystrixDriver implements Driver {
         return driver.connect(realUrl, config.getProperties());
     }
 
-    public Connection connectFallback(String url, Properties info) throws SQLException {
-        return null;
+    /**
+    @HystrixCommand(commandKey = "connectAsync",
+            groupKey = "HystrixDriver",
+            threadPoolKey = "HystrixDriverThreadPool",
+            ignoreExceptions = java.lang.Exception.class,
+            commandProperties = {
+                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "20000"),
+                    @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "1000"),
+                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "20000"),
+                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "20000"),
+                    @HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "20000"),
+            }
+    )
+    //@HystrixCollapser(fallbackEnabled = false)
+    @HystrixCollapser(scope = GLOBAL)
+    */
+    public Future<Connection> connectAsync(final String url, final Properties info) throws SQLException {
+        return new AsyncResult<Connection>() {
+            @Override
+            public Connection invoke() {
+                try {
+                    return connect(url, info);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
     }
 
     private HystrixConfiguration configure(String url, Properties info) throws SQLException {
